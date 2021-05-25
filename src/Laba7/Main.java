@@ -1,4 +1,5 @@
 package Laba7;
+import org.apache.commons.validator.routines.InetAddressValidator;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -31,8 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.*;
-import javax.swing.GroupLayout.Alignment;
 @SuppressWarnings("serial")
 public class Main extends JFrame {
     private static final String FRAME_TITLE = "Клиент мгновенных сообщений";
@@ -53,7 +52,6 @@ public class Main extends JFrame {
     private final JTextArea textAreaIncoming;
     private final JTextArea textAreaOutgoing;
     private String date;
-
 
     public Main() {
         super(FRAME_TITLE);
@@ -186,24 +184,14 @@ public class Main extends JFrame {
             final String senderName = textFieldFrom.getText();
             final String destinationAddress = textFieldTo.getText();
             final String message = textAreaOutgoing.getText();
-            final String Datt = date;
+            InetAddressValidator inetValidator = InetAddressValidator.getInstance();
 
 
-            if(!destinationAddress.isEmpty()){
-
-                Pattern p = Pattern.compile("[0-9][0-9]?[0-9]?.{1}[0-9][0-9]?[0-9]?.{1}[0-9][0-9]?[0-9]?.{1}[0-9][0-9]?[0-9]?");
-                Matcher m = p.matcher(destinationAddress);
-                boolean b = m.matches();
-
-
-                if(!b) {
-
-                    JOptionPane.showMessageDialog(this, "Некоректно введен IP" , "Ошибка",
-                            JOptionPane.ERROR_MESSAGE);
-                    textFieldTo.grabFocus();
-                    return;
-                }
-
+            if(!inetValidator.isValidInet4Address(destinationAddress)) {
+                JOptionPane.showMessageDialog(this, "Некоректно введен IP" , "Ошибка",
+                        JOptionPane.ERROR_MESSAGE);
+                textFieldTo.requestFocusInWindow();
+                return;
             }
             if (message.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -258,4 +246,3 @@ JOptionPane.ERROR_MESSAGE);
         });
     }
 }
-
